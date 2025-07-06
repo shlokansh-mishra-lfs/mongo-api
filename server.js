@@ -20,13 +20,15 @@ const dbName = "mydb";
 // READ all users
 app.get("/users", async (req, res) => {
   try {
-    await client.connect();
-    const users = await client.db(dbName).collection("users").find().toArray();
+    await client.connect(); // ⚠️ opening a new connection
+    const db = client.db(dbName);
+    const users = await db.collection("users").find().toArray();
     res.json(users);
   } catch (err) {
+    console.error("❌ /users error:", err); // <-- this line will print actual reason
     res.status(500).send("Error fetching users");
   } finally {
-    await client.close();
+    await client.close(); // ⚠️ may cause error if not connected
   }
 });
 
