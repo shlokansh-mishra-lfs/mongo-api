@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const app = express();
@@ -10,12 +11,20 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Lightweight ping route (no DB)
-app.get("/ping", (req, res) => res.send("pong"));
-
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
-const dbName = "mydb";
+let db; // will store db instance
+
+// Connect to MongoDB ONCE
+client.connect()
+  .then(() => {
+    db = client.db("mydb");
+    console.log("✅ MongoDB connected");
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+  });
+
 
 // READ all users
 app.get("/users", async (req, res) => {
