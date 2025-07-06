@@ -29,17 +29,14 @@ client.connect()
 // READ all users
 app.get("/users", async (req, res) => {
   try {
-    await client.connect(); // ⚠️ opening a new connection
-    const db = client.db(dbName);
     const users = await db.collection("users").find().toArray();
     res.json(users);
   } catch (err) {
-    console.error("❌ /users error:", err); // <-- this line will print actual reason
+    console.error("❌ /users error:", err);
     res.status(500).send("Error fetching users");
-  } finally {
-    await client.close(); // ⚠️ may cause error if not connected
   }
 });
+
 
 // CREATE a user
 app.post("/users", async (req, res) => {
